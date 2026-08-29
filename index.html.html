@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한글마당 — Ladang Hangul</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4EEDF;
+  --paper-dark:#E9DFC6;
+  --ink:#201C16;
+  --indigo:#1B3A6B;
+  --indigo-soft:#2C4F86;
+  --seal:#B7222A;
+  --gold:#C99A3C;
+  --jade:#3F6A52;
+  --line:#D8CBA6;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(circle at 8% 8%, rgba(199,154,60,0.10), transparent 40%),
+    radial-gradient(circle at 95% 15%, rgba(27,58,107,0.08), transparent 45%),
+    var(--paper);
+  color:var(--ink);
+  font-family:'Noto Sans KR', sans-serif;
+  min-height:100vh;
+  line-height:1.55;
+}
+.wrap{max-width:920px;margin:0 auto;padding:20px 16px 80px;}
+
+/* ---- header banner ---- */
+header.banner{
+  position:relative;
+  background:linear-gradient(180deg, var(--indigo) 0%, var(--indigo-soft) 100%);
+  color:#F4EEDF;
+  border-radius:var(--radius);
+  padding:26px 24px 22px;
+  overflow:hidden;
+  box-shadow:0 6px 0 var(--gold), 0 10px 24px rgba(27,58,107,0.25);
+}
+header.banner::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(90deg, rgba(244,238,223,0.06) 1px, transparent 1px);
+  background-size:22px 100%;
+  opacity:0.35;
+  pointer-events:none;
+}
+header.banner h1{
+  font-family:'Noto Serif KR', serif;
+  font-weight:900;
+  font-size:clamp(26px,5vw,38px);
+  margin:0 0 4px;
+  letter-spacing:0.5px;
+}
+header.banner p{margin:0; opacity:0.88; font-size:14.5px; max-width:560px;}
+.hangul-deco{
+  position:absolute; right:18px; top:50%; transform:translateY(-50%);
+  font-family:'Noto Serif KR',serif; font-weight:900;
+  font-size:74px; color:rgba(244,238,223,0.14); user-select:none;
+}
+
+/* ---- nav tabs ---- */
+nav.tabs{
+  display:flex; flex-wrap:wrap; gap:8px;
+  margin:18px 0 20px;
+}
+nav.tabs button{
+  font-family:'Noto Sans KR',sans-serif;
+  font-weight:700; font-size:13.5px;
+  border:2px solid var(--ink);
+  background:var(--paper-dark);
+  color:var(--ink);
+  padding:9px 14px;
+  border-radius:9px;
+  cursor:pointer;
+  box-shadow:2px 2px 0 var(--ink);
+  transition:transform .08s ease;
+}
+nav.tabs button:hover{transform:translate(-1px,-1px);}
+nav.tabs button:active{transform:translate(1px,1px); box-shadow:0 0 0 var(--ink);}
+nav.tabs button.active{
+  background:var(--seal); color:#fff; border-color:#7c1418;
+  box-shadow:2px 2px 0 #7c1418;
+}
+
+/* ---- panels ---- */
+.panel{display:none;}
+.panel.active{display:block; animation:fade .25s ease;}
+@keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+.card{
+  background:#FBF7EC;
+  border:1.5px solid var(--line);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:0 2px 0 var(--line);
+}
+.card h2{
+  font-family:'Noto Serif KR',serif;
+  font-size:20px; margin:0 0 6px;
+  color:var(--indigo);
+}
+.card h3{font-size:15.5px; color:var(--seal); margin:18px 0 8px;}
+.muted{color:#5c5648; font-size:13.5px;}
+
+/* ---- flashcard grid ---- */
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-top:12px;}
+.flash{
+  background:var(--paper);
+  border:1.5px solid var(--line);
+  border-radius:10px;
+  padding:14px 8px;
+  text-align:center;
+  cursor:pointer;
+  transition:transform .1s ease, border-color .1s ease;
+  user-select:none;
+}
+.flash:hover{border-color:var(--indigo); transform:translateY(-2px);}
+.flash .big{font-family:'Noto Serif KR',serif; font-size:30px; color:var(--ink); font-weight:700;}
+.flash .rom{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--indigo); margin-top:4px;}
+.flash .id{font-size:11px; color:#7a7359; margin-top:2px;}
+.flash .speak-icon{font-size:11px; margin-top:6px; color:var(--seal);}
+
+/* ---- controls ---- */
+.row{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:10px 0;}
+select, input[type=text], input[type=number]{
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:14px;
+  padding:8px 10px;
+  border:1.5px solid var(--ink);
+  border-radius:8px;
+  background:#fff;
+}
+button.btn{
+  font-family:'Noto Sans KR',sans-serif;
+  font-weight:700; font-size:14px;
+  padding:9px 16px;
+  border:2px solid var(--ink);
+  border-radius:9px;
+  background:var(--gold);
+  color:var(--ink);
+  cursor:pointer;
+  box-shadow:2px 2px 0 var(--ink);
+}
+button.btn:hover{transform:translate(-1px,-1px);}
+button.btn:active{transform:translate(1px,1px); box-shadow:0 0 0 var(--ink);}
+button.btn.secondary{background:var(--paper-dark);}
+button.btn.dark{background:var(--indigo); color:#fff; border-color:#0f2340;}
+button.btn.red{background:var(--seal); color:#fff; border-color:#7c1418;}
+button.btn:disabled{opacity:0.45; cursor:not-allowed;}
+
+/* ---- quiz ---- */
+.qbox{
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  padding:18px;
+  background:var(--paper);
+  position:relative;
+  overflow:hidden;
+}
+.qmeta{display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--indigo); margin-bottom:10px;}
+.qword{font-family:'Noto Serif KR',serif; font-size:34px; text-align:center; margin:8px 0 18px; color:var(--ink);}
+.options{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+@media(max-width:480px){.options{grid-template-columns:1fr;}}
+.opt{
+  border:1.5px solid var(--ink);
+  border-radius:9px;
+  padding:12px;
+  background:#fff;
+  cursor:pointer;
+  font-size:14.5px;
+  text-align:left;
+}
+.opt:hover{background:#fff8e6;}
+.opt.correct{background:#DDEDE1; border-color:var(--jade); font-weight:700;}
+.opt.wrong{background:#F6DEDD; border-color:var(--seal); font-weight:700;}
+.opt[disabled]{cursor:default;}
+
+.feedback{margin-top:14px; font-size:13.5px; padding:10px 12px; border-radius:8px; display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#DDEDE1; color:#204a34;}
+.feedback.bad{background:#F6DEDD; color:#6e1f22;}
+
+/* stamp — signature element */
+.stamp{
+  position:absolute; top:14px; right:16px;
+  width:56px; height:56px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Noto Serif KR',serif; font-weight:900; font-size:13px;
+  border-radius:8px;
+  opacity:0; transform:scale(1.6) rotate(-14deg);
+  transition:opacity .18s ease, transform .18s ease;
+  pointer-events:none;
+}
+.stamp.show{opacity:1; transform:scale(1) rotate(-8deg);}
+.stamp.ok{border:3px solid var(--seal); color:var(--seal);}
+.stamp.bad{border:3px solid var(--ink); color:var(--ink); border-radius:4px;}
+
+/* ---- score bar ---- */
+.scorebar{
+  display:flex; gap:14px; flex-wrap:wrap;
+  font-family:'JetBrains Mono',monospace; font-size:13px;
+  background:var(--paper-dark);
+  border-radius:9px; padding:10px 14px; margin-bottom:14px;
+}
+.scorebar b{color:var(--indigo);}
+
+/* ---- review table ---- */
+table.review{width:100%; border-collapse:collapse; font-size:13.5px; margin-top:10px;}
+table.review th, table.review td{border-bottom:1px solid var(--line); padding:8px 6px; text-align:left;}
+table.review td.mark{font-weight:700; width:34px; text-align:center;}
+table.review td.mark.ok{color:var(--jade);}
+table.review td.mark.bad{color:var(--seal);}
+
+/* ---- result summary ---- */
+.result-hero{
+  text-align:center; padding:26px 10px;
+}
+.result-hero .grade{
+  font-family:'Noto Serif KR',serif; font-weight:900; font-size:56px;
+  color:var(--seal); line-height:1;
+}
+.result-hero .pct{font-family:'JetBrains Mono',monospace; font-size:16px; color:var(--indigo); margin-top:6px;}
+
+/* ---- tips list ---- */
+ul.tips{padding-left:18px; margin:8px 0;}
+ul.tips li{margin-bottom:8px; font-size:14px;}
+
+.badge{
+  display:inline-block; font-size:11px; font-weight:700;
+  background:var(--indigo); color:#fff; border-radius:5px; padding:2px 8px; margin-left:6px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+footer{text-align:center; color:#8a836a; font-size:12px; margin-top:26px;}
+.speak-support{font-size:12.5px; color:#7a7359; margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="banner">
+    <span class="hangul-deco">한</span>
+    <h1>한글마당 · Ladang Hangul</h1>
+    <p>Aplikasi latihan Hangul, angka, kosakata, dan bicara bahasa Korea — lengkap dengan penilaian, koreksi, latihan harian, dan ujian. Semua progres tersimpan selama sesi ini berlangsung di layar.</p>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="beranda" class="active">🏠 Beranda &amp; Metode</button>
+    <button data-tab="hangul">가 Hangul</button>
+    <button data-tab="angka">🔢 Angka</button>
+    <button data-tab="kosakata">📚 Kosakata</button>
+    <button data-tab="bicara">🎙️ Bicara</button>
+    <button data-tab="harian">📅 Latihan Harian</button>
+    <button data-tab="latihan">✏️ Latihan Soal</button>
+    <button data-tab="ujian">🏮 Ujian</button>
+  </nav>
+
+  <!-- ===================== BERANDA ===================== -->
+  <section class="panel active" id="panel-beranda">
+    <div class="card">
+      <h2>Selamat datang!</h2>
+      <p>Aplikasi ini dibagi menjadi beberapa ruang latihan. Mulailah dari <b>Hangul</b> untuk mengenal huruf, lalu <b>Angka</b> dan <b>Kosakata</b>, coba <b>Bicara</b> untuk latihan pelafalan, kerjakan <b>Latihan Harian</b> setiap hari, gunakan <b>Latihan Soal</b> kapan saja untuk berlatih bebas, dan uji dirimu di <b>Ujian</b>.</p>
+    </div>
+
+    <div class="card">
+      <h2>Metode latihan yang disarankan</h2>
+      <ul class="tips">
+        <li><b>Lihat → Dengar → Ucapkan → Tulis.</b> Untuk setiap huruf atau kata baru, lihat bentuknya, dengarkan pelafalannya (tombol 🔊), ucapkan keras-keras, lalu tulis ulang di kertas.</li>
+        <li><b>Pengulangan berjarak (spaced repetition).</b> Ulangi materi yang sama besok, lusa, lalu 1 minggu kemudian — bukan berulang kali dalam satu hari saja.</li>
+        <li><b>15 menit tiap hari lebih baik daripada 3 jam sekali seminggu.</b> Gunakan menu Latihan Harian sebagai rutinitas singkat setiap hari.</li>
+        <li><b>Belajar dalam kelompok kecil.</b> Fokus 8–10 kosakata baru per sesi, jangan terlalu banyak sekaligus.</li>
+        <li><b>Latih telinga dan mulut bersamaan.</b> Saat mendengar audio, coba tirukan dengan suara keras — jangan hanya membaca dalam hati.</li>
+        <li><b>Analisis kesalahan.</b> Setelah kuis, baca kembali daftar koreksi (mana yang benar, mana yang salah) sebelum lanjut ke materi berikutnya.</li>
+        <li><b>Naikkan level bertahap.</b> Setelah nilai Latihan Soal konsisten di atas 80%, baru coba mode Ujian.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Cara membaca nilai</h2>
+      <p class="muted">Setiap kuis menampilkan skor benar/salah secara langsung, memberi warna hijau untuk jawaban benar dan merah untuk jawaban salah, serta stempel 🔴/⚫ bergaya segel Korea sebagai penanda. Di akhir kuis dan ujian, kamu akan melihat ringkasan nilai dalam persen beserta tabel koreksi lengkap.</p>
+    </div>
+  </section>
+
+  <!-- ===================== HANGUL ===================== -->
+  <section class="panel" id="panel-hangul">
+    <div class="card">
+      <h2>Belajar Huruf Hangul</h2>
+      <p class="muted">Klik kartu untuk mendengar pelafalannya. Konsonan (자음) dan vokal (모음) dasar bahasa Korea.</p>
+      <h3>Konsonan (자음)</h3>
+      <div class="grid" id="grid-consonants"></div>
+      <h3>Vokal (모음)</h3>
+      <div class="grid" id="grid-vowels"></div>
+    </div>
+
+    <div class="card">
+      <h2>Kuis Hangul</h2>
+      <div class="row">
+        <label>Jumlah soal:
+          <select id="hangul-count"><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
+        </label>
+        <button class="btn dark" onclick="startQuiz('hangul')">Mulai Kuis</button>
+      </div>
+      <div id="quiz-hangul"></div>
+    </div>
+  </section>
+
+  <!-- ===================== ANGKA ===================== -->
+  <section class="panel" id="panel-angka">
+    <div class="card">
+      <h2>Angka Korea</h2>
+      <p class="muted">Bahasa Korea punya <b>dua sistem angka</b>: angka Asli Korea (untuk menghitung benda, usia, jam) dan angka Sino-Korea (untuk tanggal, uang, nomor telepon, menit).</p>
+      <h3>Angka Asli Korea (1–10)</h3>
+      <div class="grid" id="grid-native"></div>
+      <h3>Angka Sino-Korea (0–10, 100, 1000)</h3>
+      <div class="grid" id="grid-sino"></div>
+    </div>
+
+    <div class="card">
+      <h2>Kuis Angka</h2>
+      <div class="row">
+        <label>Sistem:
+          <select id="angka-mode">
+            <option value="both" selected>Campuran</option>
+            <option value="native">Asli Korea</option>
+            <option value="sino">Sino-Korea</option>
+          </select>
+        </label>
+        <label>Jumlah soal:
+          <select id="angka-count"><option>5</option><option selected>10</option><option>15</option></select>
+        </label>
+        <button class="btn dark" onclick="startQuiz('angka')">Mulai Kuis</button>
+      </div>
+      <div id="quiz-angka"></div>
+    </div>
+  </section>
+
+  <!-- ===================== KOSAKATA ===================== -->
+  <section class="panel" id="panel-kosakata">
+    <div class="card">
+      <h2>Kosakata Dasar</h2>
+      <div class="row">
+        <label>Kategori:
+          <select id="vocab-cat-view" onchange="renderVocabGrid()">
+            <option value="all">Semua</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid" id="grid-vocab"></div>
+    </div>
+
+    <div class="card">
+      <h2>Kuis Kosakata</h2>
+      <div class="row">
+        <label>Kategori:
+          <select id="vocab-cat-quiz"><option value="all">Semua</option></select>
+        </label>
+        <label>Jumlah soal:
+          <select id="vocab-count"><option>5</option><option selected>10</option><option>15</option></select>
+        </label>
+        <button class="btn dark" onclick="startQuiz('kosakata')">Mulai Kuis</button>
+      </div>
+      <div id="quiz-kosakata"></div>
+    </div>
+  </section>
+
+  <!-- ===================== BICARA ===================== -->
+  <section class="panel" id="panel-bicara">
+    <div class="card">
+      <h2>Latihan Bicara (Pelafalan)</h2>
+      <p class="muted">Klik <b>🔊 Dengarkan</b> untuk mendengar pelafalan asli (text-to-speech Korea dari browser), lalu klik <b>🎙️ Ucapkan</b> dan ucapkan kata itu. Aplikasi akan mencocokkan hasil pengenalan suara dengan kata target.</p>
+      <div id="speak-support" class="speak-support"></div>
+      <div class="row">
+        <label>Sumber kata:
+          <select id="speak-source">
+            <option value="kosakata">Kosakata</option>
+            <option value="hangul">Huruf Hangul</option>
+            <option value="angka">Angka</option>
+          </select>
+        </label>
+        <button class="btn dark" onclick="newSpeakWord()">Kata Baru</button>
+      </div>
+      <div class="qbox" id="speak-box">
+        <div class="qword" id="speak-word">—</div>
+        <div class="row" style="justify-content:center">
+          <button class="btn" onclick="speakCurrent()">🔊 Dengarkan</button>
+          <button class="btn red" id="speak-record-btn" onclick="recordSpeech()">🎙️ Ucapkan</button>
+        </div>
+        <div class="feedback" id="speak-feedback"></div>
+      </div>
+      <div class="scorebar" id="speak-score">Skor bicara — Benar: <b id="speak-ok">0</b> · Salah: <b id="speak-bad">0</b></div>
+    </div>
+  </section>
+
+  <!-- ===================== LATIHAN HARIAN ===================== -->
+  <section class="panel" id="panel-harian">
+    <div class="card">
+      <h2>Latihan Harian</h2>
+      <p class="muted">Set soal campuran (Hangul, angka, kosakata) yang sama untuk <b><span id="today-date"></span></b>. Kerjakan setiap hari sebagai rutinitas singkat 5–10 menit.</p>
+      <button class="btn dark" onclick="startDaily()">Mulai Latihan Hari Ini (10 soal)</button>
+      <div id="quiz-harian"></div>
+    </div>
+  </section>
+
+  <!-- ===================== LATIHAN SOAL BEBAS ===================== -->
+  <section class="panel" id="panel-latihan">
+    <div class="card">
+      <h2>Latihan Soal Bebas</h2>
+      <p class="muted">Pilih materi dan jumlah soal sesuka hati untuk latihan tambahan.</p>
+      <div class="row">
+        <label>Materi:
+          <select id="free-material">
+            <option value="hangul">Hangul</option>
+            <option value="angka">Angka</option>
+            <option value="kosakata">Kosakata</option>
+            <option value="campuran" selected>Campuran</option>
+          </select>
+        </label>
+        <label>Jumlah soal:
+          <select id="free-count"><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
+        </label>
+        <button class="btn dark" onclick="startFreePractice()">Mulai Latihan</button>
+      </div>
+      <div id="quiz-latihan"></div>
+    </div>
+  </section>
+
+  <!-- ===================== UJIAN ===================== -->
+  <section class="panel" id="panel-ujian">
+    <div class="card">
+      <h2>🏮 Ujian Komprehensif</h2>
+      <p class="muted">25 soal acak mencakup Hangul, angka, dan kosakata. Tidak ada petunjuk tambahan selama ujian berlangsung. Nilai akhir dan tabel koreksi lengkap ditampilkan setelah selesai.</p>
+      <button class="btn red" onclick="startExam()">Mulai Ujian (25 soal)</button>
+      <div id="quiz-ujian"></div>
+    </div>
+  </section>
+
+  <footer>한글마당 — dibuat untuk latihan mandiri bahasa Korea. Progres berlaku selama sesi/browser ini terbuka.</footer>
+</div>
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const CONSONANTS = [
+  {char:'ㄱ',rom:'g / k',name:'giyeok'},
+  {char:'ㄴ',rom:'n',name:'nieun'},
+  {char:'ㄷ',rom:'d / t',name:'digeut'},
+  {char:'ㄹ',rom:'r / l',name:'rieul'},
+  {char:'ㅁ',rom:'m',name:'mieum'},
+  {char:'ㅂ',rom:'b / p',name:'bieup'},
+  {char:'ㅅ',rom:'s',name:'siot'},
+  {char:'ㅇ',rom:'ng / -',name:'ieung'},
+  {char:'ㅈ',rom:'j',name:'jieut'},
+  {char:'ㅊ',rom:'ch',name:'chieut'},
+  {char:'ㅋ',rom:'k',name:'kieuk'},
+  {char:'ㅌ',rom:'t',name:'tieut'},
+  {char:'ㅍ',rom:'p',name:'pieup'},
+  {char:'ㅎ',rom:'h',name:'hieut'},
+];
+const VOWELS = [
+  {char:'ㅏ',rom:'a'},{char:'ㅑ',rom:'ya'},{char:'ㅓ',rom:'eo'},{char:'ㅕ',rom:'yeo'},
+  {char:'ㅗ',rom:'o'},{char:'ㅛ',rom:'yo'},{char:'ㅜ',rom:'u'},{char:'ㅠ',rom:'yu'},
+  {char:'ㅡ',rom:'eu'},{char:'ㅣ',rom:'i'},{char:'ㅐ',rom:'ae'},{char:'ㅔ',rom:'e'},
+];
+const HANGUL_ALL = [...CONSONANTS, ...VOWELS];
+
+const NUM_NATIVE = [
+  {num:1,kr:'하나',rom:'hana'},{num:2,kr:'둘',rom:'dul'},{num:3,kr:'셋',rom:'set'},
+  {num:4,kr:'넷',rom:'net'},{num:5,kr:'다섯',rom:'daseot'},{num:6,kr:'여섯',rom:'yeoseot'},
+  {num:7,kr:'일곱',rom:'ilgop'},{num:8,kr:'여덟',rom:'yeodeol'},{num:9,kr:'아홉',rom:'ahop'},
+  {num:10,kr:'열',rom:'yeol'},
+];
+const NUM_SINO = [
+  {num:0,kr:'영',rom:'yeong'},{num:1,kr:'일',rom:'il'},{num:2,kr:'이',rom:'i'},
+  {num:3,kr:'삼',rom:'sam'},{num:4,kr:'사',rom:'sa'},{num:5,kr:'오',rom:'o'},
+  {num:6,kr:'육',rom:'yuk'},{num:7,kr:'칠',rom:'chil'},{num:8,kr:'팔',rom:'pal'},
+  {num:9,kr:'구',rom:'gu'},{num:10,kr:'십',rom:'sip'},{num:100,kr:'백',rom:'baek'},
+  {num:1000,kr:'천',rom:'cheon'},
+];
+const NUM_ALL = [
+  ...NUM_NATIVE.map(n=>({...n,sys:'Asli'})),
+  ...NUM_SINO.map(n=>({...n,sys:'Sino'})),
+];
+
+const VOCAB = [
+  {kr:'안녕하세요',rom:'annyeonghaseyo',id:'halo / selamat',cat:'Sapaan'},
+  {kr:'감사합니다',rom:'gamsahamnida',id:'terima kasih',cat:'Sapaan'},
+  {kr:'죄송합니다',rom:'joesonghamnida',id:'maaf',cat:'Sapaan'},
+  {kr:'네',rom:'ne',id:'ya',cat:'Sapaan'},
+  {kr:'아니요',rom:'aniyo',id:'tidak',cat:'Sapaan'},
+  {kr:'반갑습니다',rom:'bangapsseumnida',id:'senang bertemu',cat:'Sapaan'},
+  {kr:'가족',rom:'gajok',id:'keluarga',cat:'Keluarga'},
+  {kr:'어머니',rom:'eomeoni',id:'ibu',cat:'Keluarga'},
+  {kr:'아버지',rom:'abeoji',id:'ayah',cat:'Keluarga'},
+  {kr:'형',rom:'hyeong',id:'kakak laki-laki (dipanggil adik laki-laki)',cat:'Keluarga'},
+  {kr:'언니',rom:'eonni',id:'kakak perempuan (dipanggil adik perempuan)',cat:'Keluarga'},
+  {kr:'동생',rom:'dongsaeng',id:'adik',cat:'Keluarga'},
+  {kr:'밥',rom:'bap',id:'nasi',cat:'Makanan'},
+  {kr:'물',rom:'mul',id:'air',cat:'Makanan'},
+  {kr:'김치',rom:'gimchi',id:'kimchi',cat:'Makanan'},
+  {kr:'고기',rom:'gogi',id:'daging',cat:'Makanan'},
+  {kr:'과일',rom:'gwail',id:'buah',cat:'Makanan'},
+  {kr:'채소',rom:'chaeso',id:'sayur',cat:'Makanan'},
+  {kr:'커피',rom:'keopi',id:'kopi',cat:'Makanan'},
+  {kr:'빨간색',rom:'ppalgansaek',id:'warna merah',cat:'Warna'},
+  {kr:'파란색',rom:'paransaek',id:'warna biru',cat:'Warna'},
+  {kr:'노란색',rom:'noransaek',id:'warna kuning',cat:'Warna'},
+  {kr:'초록색',rom:'choroksaek',id:'warna hijau',cat:'Warna'},
+  {kr:'검은색',rom:'geomeunsaek',id:'warna hitam',cat:'Warna'},
+  {kr:'하얀색',rom:'hayansaek',id:'warna putih',cat:'Warna'},
+  {kr:'월요일',rom:'woryoil',id:'hari Senin',cat:'Hari'},
+  {kr:'화요일',rom:'hwayoil',id:'hari Selasa',cat:'Hari'},
+  {kr:'수요일',rom:'suyoil',id:'hari Rabu',cat:'Hari'},
+  {kr:'목요일',rom:'mogyoil',id:'hari Kamis',cat:'Hari'},
+  {kr:'금요일',rom:'geumyoil',id:'hari Jumat',cat:'Hari'},
+  {kr:'토요일',rom:'toyoil',id:'hari Sabtu',cat:'Hari'},
+  {kr:'일요일',rom:'iryoil',id:'hari Minggu',cat:'Hari'},
+  {kr:'가다',rom:'gada',id:'pergi',cat:'Kata Kerja'},
+  {kr:'오다',rom:'oda',id:'datang',cat:'Kata Kerja'},
+  {kr:'먹다',rom:'meokda',id:'makan',cat:'Kata Kerja'},
+  {kr:'마시다',rom:'masida',id:'minum',cat:'Kata Kerja'},
+  {kr:'좋다',rom:'jota',id:'baik / suka',cat:'Kata Kerja'},
+  {kr:'크다',rom:'keuda',id:'besar',cat:'Kata Kerja'},
+  {kr:'작다',rom:'jakda',id:'kecil',cat:'Kata Kerja'},
+];
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function pick(arr,n){ return shuffle(arr).slice(0,Math.min(n,arr.length)); }
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  u.rate = 0.85;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+/* ============================================================
+   TAB NAVIGATION
+   ============================================================ */
+document.getElementById('tabs').addEventListener('click', e=>{
+  const btn = e.target.closest('button[data-tab]');
+  if(!btn) return;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+});
+
+/* ============================================================
+   FLASHCARD GRIDS
+   ============================================================ */
+function renderFlashGrid(containerId, items, opts){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  items.forEach(it=>{
+    const div = document.createElement('div');
+    div.className='flash';
+    const big = opts.big(it);
+    const rom = opts.rom(it);
+    const idLine = opts.id ? opts.id(it) : '';
+    div.innerHTML = `<div class="big">${big}</div><div class="rom">${rom}</div>${idLine?`<div class="id">${idLine}</div>`:''}<div class="speak-icon">🔊</div>`;
+    div.onclick=()=>speak(opts.speakText(it));
+    el.appendChild(div);
+  });
+}
+renderFlashGrid('grid-consonants', CONSONANTS, {big:c=>c.char, rom:c=>c.rom+' · '+c.name, speakText:c=>c.char});
+renderFlashGrid('grid-vowels', VOWELS, {big:v=>v.char, rom:v=>v.rom, speakText:v=>v.char});
+renderFlashGrid('grid-native', NUM_NATIVE, {big:n=>n.kr, rom:n=>n.rom, id:n=>'= '+n.num, speakText:n=>n.kr});
+renderFlashGrid('grid-sino', NUM_SINO, {big:n=>n.kr, rom:n=>n.rom, id:n=>'= '+n.num, speakText:n=>n.kr});
+
+function fillCategorySelect(sel){
+  const cats = ['all', ...new Set(VOCAB.map(v=>v.cat))];
+  sel.innerHTML = cats.map(c=>`<option value="${c}">${c==='all'?'Semua':c}</option>`).join('');
+}
+fillCategorySelect(document.getElementById('vocab-cat-view'));
+fillCategorySelect(document.getElementById('vocab-cat-quiz'));
+
+function renderVocabGrid(){
+  const cat = document.getElementById('vocab-cat-view').value;
+  const list = cat==='all' ? VOCAB : VOCAB.filter(v=>v.cat===cat);
+  renderFlashGrid('grid-vocab', list, {big:v=>v.kr, rom:v=>v.rom, id:v=>v.id, speakText:v=>v.kr});
+}
+renderVocabGrid();
+
+/* ============================================================
+   GENERIC QUIZ ENGINE
+   ============================================================ */
+// question shape: {prompt, promptSub, options:[...], correctIndex, correctText, kr}
+let quizState = {}; // per-container state
+
+function buildHangulQuestions(n){
+  const pool = HANGUL_ALL;
+  return pick(pool,n).map(item=>{
+    const wrongs = pick(pool.filter(p=>p!==item), 3).map(p=>p.rom);
+    const options = shuffle([item.rom, ...wrongs]);
+    return {
+      kr:item.char,
+      prompt:item.char,
+      promptSub:'Pilih romanisasi/pelafalan yang benar',
+      options,
+      correctText:item.rom,
+      correctIndex:options.indexOf(item.rom),
+    };
+  });
+}
+function buildAngkaQuestions(n, mode){
+  let pool = NUM_ALL;
+  if(mode==='native') pool = NUM_ALL.filter(x=>x.sys==='Asli');
+  if(mode==='sino') pool = NUM_ALL.filter(x=>x.sys==='Sino');
+  return pick(pool,n).map(item=>{
+    const wrongs = pick(pool.filter(p=>p!==item),3).map(p=>String(p.num));
+    const options = shuffle([String(item.num), ...wrongs]);
+    return {
+      kr:item.kr,
+      prompt:item.kr,
+      promptSub:`Angka ${item.sys}-Korea ini artinya berapa?`,
+      options,
+      correctText:String(item.num),
+      correctIndex:options.indexOf(String(item.num)),
+    };
+  });
+}
+function buildVocabQuestions(n, cat){
+  let pool = (!cat || cat==='all') ? VOCAB : VOCAB.filter(v=>v.cat===cat);
+  if(pool.length<4) pool = VOCAB; // fallback if category too small
+  return pick(pool,n).map(item=>{
+    const wrongs = pick(pool.filter(p=>p!==item),3).map(p=>p.id);
+    const options = shuffle([item.id, ...wrongs]);
+    return {
+      kr:item.kr,
+      prompt:item.kr,
+      promptSub:`(${item.rom}) — apa artinya?`,
+      options,
+      correctText:item.id,
+      correctIndex:options.indexOf(item.id),
+    };
+  });
+}
+function buildMixedQuestions(n){
+  const parts = Math.ceil(n/3);
+  let qs = [
+    ...buildHangulQuestions(parts),
+    ...buildAngkaQuestions(parts,'both'),
+    ...buildVocabQuestions(parts,'all'),
+  ];
+  return shuffle(qs).slice(0,n);
+}
+
+function renderQuiz(containerId, questions, opts){
+  opts = opts || {};
+  quizState[containerId] = {questions, idx:0, correct:0, wrong:0, log:[]};
+  renderQuizStep(containerId, opts);
+}
+
+function renderQuizStep(containerId, opts){
+  const st = quizState[containerId];
+  const el = document.getElementById(containerId);
+  if(st.idx >= st.questions.length){
+    renderQuizResult(containerId, opts);
+    return;
+  }
+  const q = st.questions[st.idx];
+  el.innerHTML = `
+    <div class="scorebar">Soal <b>${st.idx+1}</b> / ${st.questions.length} &nbsp;·&nbsp; Benar: <b>${st.correct}</b> &nbsp;·&nbsp; Salah: <b>${st.wrong}</b></div>
+    <div class="qbox">
+      <div class="stamp" id="${containerId}-stamp"></div>
+      <div class="qmeta"><span>${q.promptSub||''}</span><span>${opts.label||''}</span></div>
+      <div class="qword">${q.prompt}</div>
+      <div class="options" id="${containerId}-options"></div>
+      <div class="feedback" id="${containerId}-feedback"></div>
+      <div class="row" style="justify-content:flex-end; margin-top:12px;">
+        <button class="btn secondary" id="${containerId}-next" style="display:none" onclick="nextQuizStep('${containerId}', ${opts.__idx||0})">Lanjut →</button>
+      </div>
+    </div>
+  `;
+  const optEl = document.getElementById(containerId+'-options');
+  q.options.forEach((optText, i)=>{
+    const b = document.createElement('button');
+    b.className='opt';
+    b.textContent = optText;
+    b.onclick = ()=>answerQuiz(containerId, i, opts);
+    optEl.appendChild(b);
+  });
+}
+
+window.__quizOptsRegistry = {};
+function nextQuizStep(containerId){
+  const st = quizState[containerId];
+  st.idx++;
+  renderQuizStep(containerId, window.__quizOptsRegistry[containerId]||{});
+}
+
+function answerQuiz(containerId, chosenIndex, opts){
+  const st = quizState[containerId];
+  const q = st.questions[st.idx];
+  window.__quizOptsRegistry[containerId]=opts;
+  const optButtons = document.querySelectorAll('#'+containerId+'-options .opt');
+  optButtons.forEach((b,i)=>{
+    b.disabled = true;
+    if(i===q.correctIndex) b.classList.add('correct');
+    else if(i===chosenIndex) b.classList.add('wrong');
+  });
+  const isCorrect = chosenIndex === q.correctIndex;
+  const fb = document.getElementById(containerId+'-feedback');
+  const stamp = document.getElementById(containerId+'-stamp');
+  if(isCorrect){
+    st.correct++;
+    fb.className='feedback show ok';
+    fb.textContent = `✔ Benar! "${q.kr}" = ${q.correctText}`;
+    stamp.className='stamp show ok';
+    stamp.textContent='정답\n(Benar)';
+    stamp.style.whiteSpace='pre';
+  } else {
+    st.wrong++;
+    fb.className='feedback show bad';
+    fb.textContent = `✘ Salah. Jawaban benar: "${q.correctText}" (untuk ${q.kr})`;
+    stamp.className='stamp show bad';
+    stamp.textContent='오답\n(Salah)';
+    stamp.style.whiteSpace='pre';
+  }
+  st.log.push({kr:q.kr, sub:q.promptSub, given: q.options[chosenIndex], correct:q.correctText, ok:isCorrect});
+  document.getElementById(containerId+'-next').style.display='inline-block';
+}
+
+function renderQuizResult(containerId, opts){
+  const st = quizState[containerId];
+  const total = st.questions.length;
+  const pct = Math.round((st.correct/total)*100);
+  let grade='D', gcolor='var(--seal)';
+  if(pct>=90){grade='A';} else if(pct>=75){grade='B';} else if(pct>=60){grade='C';} else {grade='D';}
+  const el = document.getElementById(containerId);
+  el.innerHTML = `
+    <div class="card" style="margin-top:14px;">
+      <div class="result-hero">
+        <div class="muted">Hasil ${opts.label||'Kuis'}</div>
+        <div class="grade">${grade}</div>
+        <div class="pct">${st.correct} / ${total} benar &nbsp;·&nbsp; ${pct}%</div>
+      </div>
+      <h3>Koreksi Jawaban</h3>
+      <table class="review">
+        <thead><tr><th></th><th>Soal</th><th>Jawabanmu</th><th>Jawaban Benar</th></tr></thead>
+        <tbody>
+          ${st.log.map(r=>`
+            <tr>
+              <td class="mark ${r.ok?'ok':'bad'}">${r.ok?'✔':'✘'}</td>
+              <td>${r.kr}</td>
+              <td>${r.given}</td>
+              <td>${r.correct}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="row" style="margin-top:14px;">
+        <button class="btn dark" onclick="${opts.retryFn}">Coba Lagi</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ---- launchers ---- */
+function startQuiz(type){
+  if(type==='hangul'){
+    const n = parseInt(document.getElementById('hangul-count').value);
+    renderQuiz('quiz-hangul', buildHangulQuestions(n), {label:'Hangul', retryFn:"startQuiz('hangul')"});
+  } else if(type==='angka'){
+    const n = parseInt(document.getElementById('angka-count').value);
+    const mode = document.getElementById('angka-mode').value;
+    renderQuiz('quiz-angka', buildAngkaQuestions(n,mode), {label:'Angka', retryFn:"startQuiz('angka')"});
+  } else if(type==='kosakata'){
+    const n = parseInt(document.getElementById('vocab-count').value);
+    const cat = document.getElementById('vocab-cat-quiz').value;
+    renderQuiz('quiz-kosakata', buildVocabQuestions(n,cat), {label:'Kosakata', retryFn:"startQuiz('kosakata')"});
+  }
+}
+
+function startFreePractice(){
+  const material = document.getElementById('free-material').value;
+  const n = parseInt(document.getElementById('free-count').value);
+  let qs;
+  if(material==='hangul') qs = buildHangulQuestions(n);
+  else if(material==='angka') qs = buildAngkaQuestions(n,'both');
+  else if(material==='kosakata') qs = buildVocabQuestions(n,'all');
+  else qs = buildMixedQuestions(n);
+  renderQuiz('quiz-latihan', qs, {label:'Latihan Soal', retryFn:'startFreePractice()'});
+}
+
+/* ---- daily practice (date-seeded so it's the same set all day) ---- */
+function seededRandom(seed){
+  let s = seed % 2147483647;
+  if (s<=0) s += 2147483646;
+  return function(){
+    s = (s*16807) % 2147483647;
+    return (s-1)/2147483646;
+  };
+}
+function dateSeed(){
+  const d = new Date();
+  return parseInt(`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`);
+}
+function seededPick(arr,n,rng){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(rng()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a.slice(0,Math.min(n,a.length));
+}
+function buildDailyQuestions(){
+  const rng = seededRandom(dateSeed());
+  const h = seededPick(HANGUL_ALL,4,rng).map(item=>{
+    const wrongs = seededPick(HANGUL_ALL.filter(p=>p!==item),3,rng).map(p=>p.rom);
+    const options = [item.rom, ...wrongs].sort(()=>rng()-0.5);
+    return {kr:item.char,prompt:item.char,promptSub:'Pilih romanisasi yang benar',options,correctText:item.rom,correctIndex:options.indexOf(item.rom)};
+  });
+  const a = seededPick(NUM_ALL,3,rng).map(item=>{
+    const wrongs = seededPick(NUM_ALL.filter(p=>p!==item),3,rng).map(p=>String(p.num));
+    const options = [String(item.num), ...wrongs].sort(()=>rng()-0.5);
+    return {kr:item.kr,prompt:item.kr,promptSub:`Angka ${item.sys}-Korea ini artinya berapa?`,options,correctText:String(item.num),correctIndex:options.indexOf(String(item.num))};
+  });
+  const v = seededPick(VOCAB,3,rng).map(item=>{
+    const wrongs = seededPick(VOCAB.filter(p=>p!==item),3,rng).map(p=>p.id);
+    const options = [item.id, ...wrongs].sort(()=>rng()-0.5);
+    return {kr:item.kr,prompt:item.kr,promptSub:`(${item.rom}) — apa artinya?`,options,correctText:item.id,correctIndex:options.indexOf(item.id)};
+  });
+  return [...h,...a,...v];
+}
+function startDaily(){
+  renderQuiz('quiz-harian', buildDailyQuestions(), {label:'Latihan Harian', retryFn:'startDaily()'});
+}
+document.getElementById('today-date').textContent = new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+/* ---- exam ---- */
+function startExam(){
+  const qs = buildMixedQuestions(25);
+  renderQuiz('quiz-ujian', qs, {label:'Ujian', retryFn:'startExam()'});
+}
+
+/* ============================================================
+   SPEAKING PRACTICE
+   ============================================================ */
+let currentSpeakItem = null;
+let speakOk = 0, speakBad = 0;
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const supportsRecognition = !!SpeechRecognition;
+const supportsTTS = 'speechSynthesis' in window;
+
+document.getElementById('speak-support').textContent = supportsRecognition
+  ? 'Pengenalan suara didukung oleh browser ini — tombol 🎙️ Ucapkan akan merekam dan menilai otomatis.'
+  : 'Browser ini tidak mendukung pengenalan suara otomatis. Kamu tetap bisa mendengarkan pelafalan dan menilai ucapanmu sendiri.';
+
+function getSpeakPool(){
+  const src = document.getElementById('speak-source').value;
+  if(src==='hangul') return HANGUL_ALL.map(h=>({kr:h.char, rom:h.rom, id:h.name||h.rom}));
+  if(src==='angka') return NUM_ALL.map(n=>({kr:n.kr, rom:n.rom, id:String(n.num)}));
+  return VOCAB.map(v=>({kr:v.kr, rom:v.rom, id:v.id}));
+}
+function newSpeakWord(){
+  const pool = getSpeakPool();
+  currentSpeakItem = pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('speak-word').textContent = currentSpeakItem.kr;
+  const fb = document.getElementById('speak-feedback');
+  fb.className='feedback'; fb.textContent='';
+}
+function speakCurrent(){
+  if(currentSpeakItem) speak(currentSpeakItem.kr);
+}
+function normalize(s){
+  return (s||'').toLowerCase().replace(/[^a-z가-힣0-9]/g,'').trim();
+}
+function recordSpeech(){
+  if(!currentSpeakItem){ newSpeakWord(); }
+  const fb = document.getElementById('speak-feedback');
+  if(!supportsRecognition){
+    // Fallback: self-assessment
+    fb.className='feedback show';
+    fb.innerHTML = `Ucapkan "<b>${currentSpeakItem.kr}</b>" (${currentSpeakItem.rom}) dengan keras, lalu nilai sendiri:
+      <div class="row" style="margin-top:8px;">
+        <button class="btn secondary" onclick="markSpeak(true)">Saya rasa benar ✔</button>
+        <button class="btn secondary" onclick="markSpeak(false)">Saya rasa masih salah ✘</button>
+      </div>`;
+    return;
+  }
+  const rec = new SpeechRecognition();
+  rec.lang = 'ko-KR';
+  rec.interimResults = false;
+  rec.maxAlternatives = 3;
+  const btn = document.getElementById('speak-record-btn');
+  btn.disabled = true; btn.textContent='🎙️ Mendengarkan...';
+  fb.className='feedback show'; fb.textContent='Silakan ucapkan sekarang...';
+  rec.onresult = (e)=>{
+    const alts = Array.from(e.results[0]).map(a=>a.transcript);
+    const target = normalize(currentSpeakItem.kr);
+    const matched = alts.some(a=>normalize(a)===target || normalize(a).includes(target));
+    fb.className = 'feedback show ' + (matched?'ok':'bad');
+    fb.innerHTML = matched
+      ? `✔ Bagus! Terdengar: "${alts[0]}" — cocok dengan "${currentSpeakItem.kr}"`
+      : `✘ Belum cocok. Terdengar: "${alts[0]}" — target: "${currentSpeakItem.kr}" (${currentSpeakItem.rom}). Coba lagi.`;
+    markSpeak(matched, false);
+  };
+  rec.onerror = ()=>{
+    fb.className='feedback show bad';
+    fb.textContent='Gagal menangkap suara (izin mikrofon mungkin ditolak). Coba lagi atau gunakan penilaian manual.';
+  };
+  rec.onend = ()=>{ btn.disabled=false; btn.textContent='🎙️ Ucapkan'; };
+  try{ rec.start(); }catch(err){ btn.disabled=false; btn.textContent='🎙️ Ucapkan'; }
+}
+function markSpeak(isOk, updateFeedback){
+  if(isOk) speakOk++; else speakBad++;
+  document.getElementById('speak-ok').textContent = speakOk;
+  document.getElementById('speak-bad').textContent = speakBad;
+  if(updateFeedback!==false){
+    const fb = document.getElementById('speak-feedback');
+    fb.className = 'feedback show ' + (isOk?'ok':'bad');
+    fb.textContent = isOk ? `✔ Dicatat sebagai benar untuk "${currentSpeakItem.kr}"` : `✘ Dicatat sebagai salah untuk "${currentSpeakItem.kr}" — coba dengarkan lagi.`;
+  }
+}
+newSpeakWord();
+</script>
+</body>
+</html>
